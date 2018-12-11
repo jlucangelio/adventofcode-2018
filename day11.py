@@ -65,8 +65,6 @@ for x in range(299):
 
         squares[(x, y, 2)] = p
 
-last_full = 3
-
 for s in range(3, 300):
     size = s + 1
     print size
@@ -102,7 +100,5 @@ for s in range(3, 300):
                 max_size = size
 
             squares[(left, top, size)] = p
-
-    last_full = size
 
 print "%d,%d,%d" % (max_x, max_y, max_size)
