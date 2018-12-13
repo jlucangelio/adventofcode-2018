@@ -129,13 +129,16 @@ while len(cart_direction) > 1:
             # Crash into a cart that hasn't moved yet.
             print "crash"
             print new_c.x, new_c.y
+            # Remove the cart crashed into.
             del cart_direction[new_c]
             del cart_next_turn[new_c]
+            # Don't add the current cart to the new state, which is the same
+            # as removing it.
         elif new_c in new_cart_direction:
             # Crash into a cart that has already moved.
             print "crash"
             print new_c.x, new_c.y
-            # Remove cart crashed into.
+            # Remove the cart crashed into.
             del new_cart_direction[new_c]
             del new_cart_next_turn[new_c]
             # Don't add the current cart to the new state, which is the same
