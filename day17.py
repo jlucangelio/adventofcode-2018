@@ -48,9 +48,6 @@ def water_blocked(sq, grid):
 
 
 def flow_down_and_fill_one_level(sq, grid):
-    # return the new flow down spots.
-
-    # print sq
     sq_below = sq + DOWN
     while sq_below.y <= max_y and sq_below not in grid:
         # |sq_below| is sand, so keep flowing
@@ -60,40 +57,36 @@ def flow_down_and_fill_one_level(sq, grid):
 
     if sq_below.y > max_y:
         grid[sq] = "|"
-        return (False, [])    # Not filled.
+        return []   # stop flowing
 
     # |sq_below| is clay or water
     if grid[sq_below] == "#" or grid[sq_below] == "~":
         is_flowing_left, left_edge = flow_sideways(sq, grid, left=True)
         is_flowing_right, right_edge = flow_sideways(sq, grid, left=False)
 
-        filled = False
         flowing = []
         if not is_flowing_left and not is_flowing_right:
             # it's filled
-            filled = True
             for i in range(left_edge.x + 1, right_edge.x):
                 grid[i, sq.y] = "~"
             flowing.append(sq + UP)
         else:
-            # print "mark as flowing"
             grid[sq] = "|"
             if is_flowing_left:
                 flowing.append(left_edge)
             if is_flowing_right:
                 flowing.append(right_edge)
 
-        return (filled, flowing)
+        return flowing
 
     elif grid[sq_below] == "|":
         grid[sq] = "|"
-        return (False, [])
+        return []   #   this happens when two flows collect in the same reservoir
 
     else:
         print sq, grid[sq], grid[sq_below]
         print_grid(grid, min_y, max_y, max_x)
         print "error"
-
 
 
 def flow_sideways(sq, grid, left=True):
@@ -124,15 +117,14 @@ def flow_sideways(sq, grid, left=True):
 def sum_reached(grid, min_y):
     return sum([1 for p, v in grid.iteritems() if p.y >= min_y and (v == "|" or v == "~")])
 
+
 def sum_retained(grid, min_y):
     return sum([1 for p, v in grid.iteritems() if p.y >= min_y and v == "~"])
 
 
 def print_grid(grid, min_y, max_y, max_x):
     min_x = 0
-    # max_x = 505
 
-    # print "." * 15 + "+" + "." * (max_x - 485 - 16 + 2)
     print "." * 500 + "+" + "." * (max_x - 501 + 2)
     for j in range(1, max_y + 2):
         line = []
@@ -150,7 +142,7 @@ max_x = 0
 min_y = None
 max_y = 0
 
-lines = INPUT.splitlines()
+# lines = INPUT.splitlines()
 with open("day17.input") as f:
     lines = f.readlines()
 
@@ -188,10 +180,10 @@ for line in lines:
 flow_from = [Pos(500, 0)]
 while len(flow_from) > 0:
     pos = flow_from.pop()
-    filled, flowing = flow_down_and_fill_one_level(pos, grid)
+    flowing = flow_down_and_fill_one_level(pos, grid)
     flow_from.extend(flowing)
 
 
-print sum_reached(grid, min_y)
-print sum_retained(grid, min_y)
+print "reached", sum_reached(grid, min_y)
+print "retained", sum_retained(grid, min_y)
 # print_grid(grid, min_y, max_y, max_x + 1)
