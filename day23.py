@@ -23,11 +23,11 @@ def num_in_range(bot, others):
     return sum([1 for other in others if bot_distance(bot, other) <= bot.r])
 
 
-def int_floor(n, m):
+def floor(n, m):
     return ((n // m)) * m
 
 
-def int_ceil(n, m):
+def ceil(n, m):
     return ((n // m) + 1) * m
 
 
@@ -92,16 +92,16 @@ with open("day23.input") as f:
 
 print strongest
 print "part 1:", num_in_range(strongest, bots)
-print
 
 for grid_size in [100000000, 10000000, 1000000, 100000, 10000, 1000, 100, 10, 1]:
     max_score = None
     print
     print "min", min_x, min_y, min_z, grid_size
     print "max", max_x, max_y, max_z, grid_size
-    x_range = xrange(int_floor(min_x, grid_size), int_ceil(max_x, grid_size), grid_size)
-    y_range = xrange(int_floor(min_y, grid_size), int_ceil(max_y, grid_size), grid_size)
-    z_range = xrange(int_floor(min_z, grid_size), int_ceil(max_z, grid_size), grid_size)
+
+    x_range = xrange(floor(min_x, grid_size), ceil(max_x, grid_size), grid_size)
+    y_range = xrange(floor(min_y, grid_size), ceil(max_y, grid_size), grid_size)
+    z_range = xrange(floor(min_z, grid_size), ceil(max_z, grid_size), grid_size)
 
     for x in x_range:
         for y in y_range:
@@ -133,4 +133,4 @@ for grid_size in [100000000, 10000000, 1000000, 100000, 10000, 1000, 100, 10, 1]
 print
 print best
 print min(best, key=lambda b: distance(b, ORIGIN))
-print distance(min(best, key=lambda b: distance(b, ORIGIN)), ORIGIN)
+print "part 2:", distance(min(best, key=lambda b: distance(b, ORIGIN)), ORIGIN)
