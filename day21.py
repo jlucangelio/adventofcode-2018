@@ -157,7 +157,9 @@ functions["eqir"] = eqir
 functions["eqri"] = eqri
 functions["eqrr"] = eqrr
 
-DEBUG = True
+
+DEBUG = False
+PART1 = False
 
 instructions = []
 for line in INPUT[1:]:
@@ -168,15 +170,14 @@ ip_binding = int(INPUT[0].split()[1])
 
 regs = dict([(i, 0) for i in range(6)])
 
-# regs[0] = 9107763
-# print "r0", regs[0]
-max_reg0 = 9107763
+r3s = set([])
+r3_last = None
 
 ip = 0
 cycle = 0
 while ip < len(instructions):
-    # if cycle % 1000000 == 0:
-        # print cycle
+    if cycle % 100000000 == 0:
+        print "cycle", cycle
 
     regs[ip_binding] = ip
 
@@ -191,7 +192,18 @@ while ip < len(instructions):
         print s
 
     if ip == 28:
-        print regs
+        r3_value = regs[3]
+        if PART1:
+            print r3_value
+            break
+        else:
+            print len(r3s)
+            if r3_value in r3s:
+                print r3_last
+                break
+            else:
+                r3s.add(r3_value)
+                r3_last = r3_value
 
     functions[opcode](a, b, c, regs)
 
@@ -199,6 +211,3 @@ while ip < len(instructions):
     ip +=1
 
     cycle += 1
-
-# print regs[0]
-print cycle
