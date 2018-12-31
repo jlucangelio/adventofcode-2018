@@ -1,8 +1,8 @@
+import heapq
+import itertools
 import sys
 
 from collections import namedtuple
-
-sys.setrecursionlimit(10000)
 
 class Pos(namedtuple("Pos", "x y")):
     __slots__ = ()
@@ -27,6 +27,37 @@ TARGET = Pos(5, 746)
 
 # DEPTH = 510
 # TARGET = Pos(10, 10)
+
+pq = []                         # list of entries arranged in a heap
+entry_finder = {}               # mapping of tasks to entries
+REMOVED = '<removed-task>'      # placeholder for a removed task
+counter = itertools.count()     # unique sequence count
+
+def add_task(task, priority=0):
+    'Add a new task or update the priority of an existing task.'
+    if task in entry_finder:
+        remove_task(task)
+    count = next(counter)
+    entry = [priority, count, task]
+    entry_finder[task] = entry
+    heapq.heappush(pq, entry)
+
+
+def remove_task(task):
+    'Mark an existing task as REMOVED. Raise KeyError if not found.'
+    entry = entry_finder.pop(task)
+    entry[-1] = REMOVED
+
+
+def pop_task():
+    'Remove and return the lowest priority task. Raise KeyError if empty.'
+    while pq:
+        priority, count, task = heapq.heappop(pq)
+        if task is not REMOVED:
+            del entry_finder[task]
+            return task
+    raise KeyError('pop from an empty priority queue')
+
 
 max_x = TARGET.x + 1
 max_y = TARGET.y + 1
@@ -160,15 +191,17 @@ for i in range(max_x + extra_xlen):
         for node in nodes:
             unvisited.add(node)
             dist[node] = (max_x + max_y) * 8 * 100
+            add_task(node, dist[node])
 
 dist[(mouth, TORCH)] = 0
+add_task((mouth, TORCH), 0)
 prev[(mouth, TORCH)] = None
 
 objective = (TARGET, TORCH)
 
 while len(unvisited) > 0:
-    print len(unvisited)
-    u = min(unvisited, key=lambda v: dist[v])
+    # u = min(unvisited, key=lambda v: dist[v])
+    u = pop_task()
 
     if u == objective:
         break
@@ -180,6 +213,7 @@ while len(unvisited) > 0:
             alt = dist[u] + l
             if alt < dist[n]:
                 dist[n] = alt
+                add_task(n, alt)
                 prev[n] = u
 
 print objective, dist[objective]
